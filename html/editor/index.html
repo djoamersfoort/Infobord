@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>InfoBord Editor</title>
+
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/popper.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="/editor/style.css">
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="/editor/script.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
+  <a class="navbar-brand" href="#">
+    <img src="/src/logo.png" class="user_icon" height="30" width="30"> <span class="user_name">InfoBord Editor</span></img>
+  </a>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">File</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#" onclick="cmd.save()">Save <span class="text-secondary small">Ctrl+S</span></a>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#config_modal">Config</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#" onclick="cmd.logout()">Logout</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">Edit</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#" onclick="cmd.undo()">Step Backward <span class="text-secondary small">Ctrl+Z</span></a>
+          <a class="dropdown-item" href="#" onclick="cmd.redo()">Step Forward <span class="text-secondary small">Ctrl+Y</span></a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" onclick="cmd.cut()">Cut <span class="text-secondary small">Ctrl+X</span></a>
+          <a class="dropdown-item" href="#" onclick="cmd.copy()">Copy <span class="text-secondary small">Ctrl+C</span></a>
+          <a class="dropdown-item" href="#" onclick="cmd.paste()">Paste <span class="text-secondary small">Ctrl+V</span></a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#" onclick="cmd.removeSlide()">Remove Slide <span class="text-secondary small">Ctrl+Del</span></a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">Insert</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#" onclick="cmd.addSlide(0)">Text Only Slide <span class="text-secondary small">Ctrl+1</span></a>
+          <a class="dropdown-item" href="#" onclick="cmd.addSlide(1)">Text & Image Slide <span class="text-secondary small">Ctrl+2</span></a>
+          <a class="dropdown-item" href="#" onclick="cmd.addSlide(2)">Image Slide <span class="text-secondary small">Ctrl+3</span></a>
+          <a class="dropdown-item" href="#" onclick="cmd.addSlide(3)">Full Image Slide <span class="text-secondary small">Ctrl+4</span></a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown">Style</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Theme <span class="text-secondary small">Ctrl+T</span></a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="slide"></div>
+
+<div class="slides-bar"><ul class="nav slides"></ul></div>
+
+<div class="modal input_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title input_modal_title"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input class="form-control input_modal_input" placeholder="">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary input_modal_button" data-dismiss="modal">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="config_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Configuration</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-left">
+				<label>
+					Slide Delay (In Seconds)
+					<input type="number" class="form-control config_modal_delay" placeholder="10">
+				</label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary config_modal_save" data-dismiss="modal">Save and Reload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
