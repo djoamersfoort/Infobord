@@ -10,7 +10,7 @@
   "author": "WIPEAUT",
   "license": "MIT",
   "dependencies": {
-    "express": "4.16.4",
+    "express": "4.17.3",
     "https-post": "0.1.1",
     "simple-oauth2": "2.2.1",
     "socket.io": "^4.5.3"
