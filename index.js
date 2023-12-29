@@ -1,4 +1,5 @@
 const { Slides } = require("./lib/slides.js");
+const { randomUUID } = require("crypto");
 
 const fs = require("fs");
 
@@ -103,10 +104,8 @@ app.get("/authed", async function(req, res) {
 				res.setHeader('Content-Type', 'text/html');
 
 				if(output.accountType.split(",").indexOf("bestuur") !== -1 || output.id === 96) {
-					let code = Math.floor(Math.random()*10000000);
-					while(authorized[code] !== undefined) code = Math.floor(Math.random()*10000000);
-
-					authorized[code.toString()] = output.firstName;
+					const code = randomUUID();
+					authorized[code] = output.firstName;
 
 					res.send("<script>localStorage.code="+code+";localStorage.person='"+output.firstName+"';location.href = '/editor';</script>");
 				} else {
