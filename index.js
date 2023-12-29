@@ -128,7 +128,7 @@ io.on("connection", function(socket) {
 	socket.emit("slide", slides.get(slideIndex));
 
 	socket.on("save", function(args) {
-		if(args.code && authorized[args.code] !== undefined) {
+		if(args.code && authorized.hasOwnProperty(args.code)) {
 			fs.writeFile("data/slides.json", JSON.stringify(slides.get()), function(err) {
 				if(err) {
 					console.log("Error while saving slides!", err);
@@ -143,7 +143,7 @@ io.on("connection", function(socket) {
 	});
 
 	socket.on("add", function(args) {
-		if(args.code && authorized[args.code] !== undefined) {
+		if(args.code && authorized.hasOwnProperty(args.code)) {
 			slides.add(styles[args.style]);
 			io.emit("added", styles[args.style]);
 		} else {
@@ -152,7 +152,7 @@ io.on("connection", function(socket) {
 	});
 
 	socket.on("edit", function(args) {
-		if(args.code && authorized[args.code] !== undefined) {
+		if(args.code && authorized.hasOwnProperty(args.code)) {
 			slides.edit(args.slide, args.content);
 			socket.broadcast.emit("edited", {slide:args.slide,content:args.content});
 		} else {
@@ -161,7 +161,7 @@ io.on("connection", function(socket) {
 	});
 
 	socket.on("remove", function(args) {
-		if(args.code && authorized[args.code] !== undefined) {
+		if(args.code && authorized.hasOwnProperty(args.code)) {
 			slides.remove(args.index);
 			io.emit("removed", args.index);
 		} else {
@@ -170,11 +170,11 @@ io.on("connection", function(socket) {
 	});
 
 	socket.on("auth", function(args) {
-		socket.emit("auth", (args.code && authorized[args.code] !== undefined));
+		socket.emit("auth", (args.code && authorized.hasOwnProperty(args.code)));
 	});
 
 	socket.on("config", function(args) {
-		if(args.code && authorized[args.code] !== undefined) {
+		if(args.code && authorized.hasOwnProperty(args.code)) {
 			config = args.config;
 			socket.emit("notify", [{message:"The config has been saved!"},{type:"success"}]);
 		} else {
