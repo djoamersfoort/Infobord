@@ -1,13 +1,13 @@
-const registerFolder = require("./lib/express_register_folder.js");
-const _slides = require("./lib/slides.js").slides;
-const onExit = require("./lib/onexit.js");
+const { Slides } = require("./lib/slides.js");
 
 const fs = require("fs");
-const { exec } = require('child_process');
 
 const express = require('express');
 const http = require("http");
-const _io = require("socket.io");
+const SocketIO = require("socket.io");
+
+const { AuthorizationCode } = require("simple-oauth2")
+const https = require("https")
 
 const port = 8180;
 let authorized = {};
@@ -17,10 +17,10 @@ let config = {
 };
 
 // oath2
-const oauth2 = require('simple-oauth2').create({
+const oauth2 = new AuthorizationCode({
 	client: {
-		id: "eE4hlNNn1RLffmBgb9eyWS0N6hIsn8ng0lrJ7eom",
-		secret: "<jajaegnie>"
+		id: process.env.CLIENT_ID,
+		secret: process.env.CLIENT_SECRET
 	},
 	auth: {
 		tokenHost: "https://leden.djoamersfoort.nl",
@@ -29,7 +29,7 @@ const oauth2 = require('simple-oauth2').create({
 	}
 });
 
-let slides = new _slides();
+const slides = new Slides();
 
 // all slide styles
 const styles = [
@@ -40,15 +40,14 @@ const styles = [
 ];
 
 // read slides from file
-slides.slides = JSON.parse(fs.readFileSync(__dirname+"/slides.json", {encoding:"utf8"}));
+slides.slides = JSON.parse(fs.readFileSync("data/slides.json", {encoding:"utf8"}));
 
 
 // webshite
 const app = express();
-var httpServer = http.Server(app);
-const io = _io(httpServer);
-
-registerFolder(app, "/home/infobord/html", "");
+app.use(express.static("html"))
+const httpServer = new http.Server(app);
+const io = new SocketIO.Server(httpServer);
 
 // cycle slides
 let slideIndex = -1;
@@ -67,8 +66,8 @@ nextSlide();
 
 // oauth2
 app.get("/auth", async function(req, res) {
-	const authorizationUri = oauth2.authorizationCode.authorizeURL({
-	  redirect_uri: 'https://infobord.djoamersfoort.nl/authed',
+	const authorizationUri = oauth2.authorizeURL({
+	  redirect_uri: `${process.env.BASE_URL}/authed`,
 	  scope: 'user/basic user/names',
 		state: "infobord"
 	});
@@ -77,15 +76,15 @@ app.get("/auth", async function(req, res) {
 });
 app.get("/authed", async function(req, res) {
 	try {
-	  const result = await oauth2.authorizationCode.getToken({
+	  const result = await oauth2.getToken({
 			code: req.query.code,
-			redirect_uri: 'https://infobord.djoamersfoort.nl/authed',
+			redirect_uri: `${process.env.BASE_URL}/authed`,
 			scope: 'user/basic user/names'
-		});
+		})
 
-		accessToken = result.access_token;
+		const accessToken = result.token.access_token;
 
-		require("https").request({
+		https.request({
 			host: "leden.djoamersfoort.nl",
 			port: 443,
 			path: "/api/v1/member/details",
@@ -114,7 +113,7 @@ app.get("/authed", async function(req, res) {
 					res.send("<script>localStorage.person='"+output.firstName+"';location.href = '/lid';</script>");
 				}
 			});
-		}).on("error", function(error) {
+		}).on("error", function () {
 			res.redirect("/auth");
 		}).end();
 	} catch (error) {
@@ -130,7 +129,7 @@ io.on("connection", function(socket) {
 
 	socket.on("save", function(args) {
 		if(args.code && authorized[args.code] !== undefined) {
-			fs.writeFile(__dirname+"/slides.json", JSON.stringify(slides.get()), function(err) {
+			fs.writeFile("data/slides.json", JSON.stringify(slides.get()), function(err) {
 				if(err) {
 					console.log("Error while saving slides!", err);
 					socket.emit("notify", [{message:"Uh Oh... Your progress could not be saved. This was not meant to happen!"},{type:"warning"}]);
