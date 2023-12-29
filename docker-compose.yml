@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  infobord:
+    image: infobord
+    container_name: infobord
+
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "8180:8180"
