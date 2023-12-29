@@ -107,9 +107,9 @@ app.get("/authed", async function(req, res) {
 					const code = randomUUID();
 					authorized[code] = output.firstName;
 
-					res.send("<script>localStorage.code="+code+";localStorage.person='"+output.firstName+"';location.href = '/editor';</script>");
+					res.send(`<script>localStorage.code="${code}"; localStorage.person="${output.firstName}"; location.href = "/editor";</script>`);
 				} else {
-					res.send("<script>localStorage.person='"+output.firstName+"';location.href = '/lid';</script>");
+					res.send(`<script>localStorage.person="${output.firstName}"; location.href = "/lid";</script>`);
 				}
 			});
 		}).on("error", function () {
