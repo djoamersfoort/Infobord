@@ -10,10 +10,10 @@
   "author": "WIPEAUT",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "https-post": "0.1.1",
     "simple-oauth2": "^5.0.0",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
     "@types/simple-oauth2": "^5.0.7"
