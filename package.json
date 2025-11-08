@@ -12,6 +12,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "express-rate-limiter": "1.3.1",
     "https-post": "0.1.1",
     "simple-oauth2": "5.1.0",
     "socket.io": "4.8.1",
