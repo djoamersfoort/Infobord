@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>403 Forbidden</title>
+    <script>
+      var tag = document.createElement('script');
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      var player;
+      function playvid() {
+        player = new YT.Player('player', {
+          videoId: 'dQw4w9WgXcQ',
+          playerVars: {
+            'playsinline': 1
+          },
+          events: {
+            'onReady': onPlayerReady
+          }
+        });
+      }
+
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+    </script>
+    <style>
+      body {
+        text-align: center;
+      }
+      /* the below part was made by SweatyCircle439 (on computerwilco's laptop) */
+      .main {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+      }
+      .buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+      }
+      iframe {
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>HTTP 403 JOCH</h1>
+    <hr>
+    <div id="player"></div>
+    <div class="main">
+      <h4>
+        Waarom heb je geweigerd, jij JOCH, ben jij mischien stiekem geen begeleider?
+      </h4>
+      <!-- the below part was made by SweatyCircle439 (on computerwilco's laptop) -->
+      <div class="buttons">
+        <button onclick='playvid();'>Ik identificeer mijzelf als een begeleider</button>
+        <button onclick='window.location.assign("/")'>Ik zal deze pagina verlaten</button>
+      </div>
+    </div>
+  </body>
+</html>

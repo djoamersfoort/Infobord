@@ -24,7 +24,7 @@ const cmd = {
   removeSlide: function() { socket.emit("remove", {index:getCurrentSlide(),code:localStorage.code}); },
   addSlide: function(s) { socket.emit("add", {style:s,code:localStorage.code}); },
   save: function() { socket.emit("save", {code:localStorage.code}); },
-  logout: function() { localStorage.removeItem("code");location.href = "/auth"; }
+  logout: function() { localStorage.removeItem("code");location.href = "/"; }
 };
 
 let slides = [];

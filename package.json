@@ -1,21 +1,23 @@
 {
   "name": "djo_infobord",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "The DJO Inforbord",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "update": "npx -y Jelmerro/nus"
   },
-  "author": "WIPEAUT",
+  "author": "WIPEAUT & Wilco Joosen",
   "license": "MIT",
+  "type": "module",
   "dependencies": {
-    "express": "^4.21.2",
     "https-post": "0.1.1",
-    "simple-oauth2": "^5.0.0",
-    "socket.io": "^4.7.2"
+    "simple-oauth2": "5.1.0",
+    "socket.io": "4.8.1",
+    "wwexpress": "2.0.0"
   },
   "devDependencies": {
-    "@types/simple-oauth2": "^5.0.7"
+    "@types/simple-oauth2": "5.0.7"
   }
 }

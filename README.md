@@ -1,1 +1,1 @@
-# infobord
+# DJO Infobord

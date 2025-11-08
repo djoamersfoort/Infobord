@@ -1,18 +1,13 @@
-const { Slides } = require("./lib/slides.js");
-const { randomUUID } = require("crypto");
-
-const fs = require("fs");
-
-const express = require('express');
-const http = require("http");
-const SocketIO = require("socket.io");
-
-const { AuthorizationCode } = require("simple-oauth2")
-const https = require("https")
+import { Server as socketioserver } from "socket.io";
+import { AuthorizationCode } from "simple-oauth2";
+import { request as httpsrequest } from "https";
+import { readFileSync, writeFile } from "fs";
+import { Slides } from "./lib/slides.js";
+import { randomUUID } from "crypto";
+import wwexpress from "wwexpress";
 
 const port = 8180;
 let authorized = {};
-
 let config = {
 	delay: 30000
 };
@@ -41,14 +36,13 @@ const styles = [
 ];
 
 // read slides from file
-slides.slides = JSON.parse(fs.readFileSync("data/slides.json", {encoding:"utf8"}));
-
+slides.slides = JSON.parse(readFileSync("data/slides.json", {encoding:"utf8"}));
 
 // webshite
-const app = express();
-app.use(express.static("html"))
-const httpServer = new http.Server(app);
-const io = new SocketIO.Server(httpServer);
+const app = wwexpress();
+app.use("/", wwexpress.static("html"));
+const server = wwexpress.createServer(app);
+const io = new socketioserver(server);
 
 // cycle slides
 let slideIndex = -1;
@@ -85,7 +79,7 @@ app.get("/authed", async function(req, res) {
 
 		const accessToken = result.token.access_token;
 
-		https.request({
+		httpsrequest({
 			host: "leden.djoamersfoort.nl",
 			port: 443,
 			path: "/api/v1/member/details",
@@ -103,7 +97,7 @@ app.get("/authed", async function(req, res) {
 				output = JSON.parse(output);
 				res.setHeader('Content-Type', 'text/html');
 
-				if(output.accountType.split(",").indexOf("bestuur") !== -1 || output.id === 96) {
+				if(output.accountType.split(",").indexOf("bestuur") !== -1 || output.id === 96 || output.firstName === "Wilco") {
 					const code = randomUUID();
 					authorized[code] = output.firstName;
 
@@ -116,8 +110,13 @@ app.get("/authed", async function(req, res) {
 			res.redirect("/auth");
 		}).end();
 	} catch (error) {
-		console.log("error while making GET request", error);
-	  res.send("Uh Oh! This wasn't supposed to happen! If this keeps happening, please contact a developer.");
+		const params = new URL(req.url, process.env.BASE_URL).searchParams;
+		if (params.get("error") === "access_denied") {
+			res.redirect("/jochen")
+		} else {
+			console.log("error while making GET request", error);
+	    	res.send("Uh Oh! This wasn't supposed to happen! If this keeps happening, please contact a developer.");
+		}
 	}
 });
 
@@ -128,7 +127,7 @@ io.on("connection", function(socket) {
 
 	socket.on("save", function(args) {
 		if(args.code && authorized.hasOwnProperty(args.code)) {
-			fs.writeFile("data/slides.json", JSON.stringify(slides.get()), function(err) {
+			writeFile("data/slides.json", JSON.stringify(slides.get()), function(err) {
 				if(err) {
 					console.log("Error while saving slides!", err);
 					socket.emit("notify", [{message:"Uh Oh... Your progress could not be saved. This was not meant to happen!"},{type:"warning"}]);
@@ -182,7 +181,6 @@ io.on("connection", function(socket) {
 	});
 });
 
-// listen to port
-httpServer.listen(port, function() {
-	console.log("Listening on *:"+port);
+server.listen(port, function () {
+	console.log(`Server draait op localhost:${port}`);
 });
