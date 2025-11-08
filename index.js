@@ -4,6 +4,7 @@ const { randomUUID } = require("crypto");
 const fs = require("fs");
 
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const http = require("http");
 const SocketIO = require("socket.io");
 
@@ -12,6 +13,13 @@ const https = require("https")
 
 const port = 8180;
 let authorized = {};
+
+// Rate limiter for auth route
+const authLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: "Too many authentication attempts from this IP, please try again after a minute"
+});
 
 let config = {
 	delay: 30000
@@ -66,7 +74,7 @@ const nextSlide = function() {
 nextSlide();
 
 // oauth2
-app.get("/auth", async function(req, res) {
+app.get("/auth", authLimiter, async function(req, res) {
 	const authorizationUri = oauth2.authorizeURL({
 	  redirect_uri: `${process.env.BASE_URL}/authed`,
 	  scope: 'user/basic user/names',
