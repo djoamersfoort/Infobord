@@ -189,5 +189,5 @@ io.on("connection", function(socket) {
 });
 
 server.listen(port, function () {
-	console.log(`Server draait op localhost:${port}`);
+	console.log(`Server is running on 0.0.0.0:${port}`);
 });
