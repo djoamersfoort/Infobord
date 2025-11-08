@@ -1,7 +1,6 @@
 import { Server as socketioserver } from "socket.io";
 import { AuthorizationCode } from "simple-oauth2";
 import { request as httpsrequest } from "https";
-import rateLimit from "express-rate-limiter";
 import { readFileSync, writeFile } from "fs";
 import { Slides } from "./lib/slides.js";
 import { randomUUID } from "crypto";
@@ -24,12 +23,6 @@ const oauth2 = new AuthorizationCode({
                 authorizePath: "/o/authorize/",
                 tokenPath: "/o/token/"
 	}
-});
-
-const authLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000,
-  max: 10,
-  message: "Too many authentication attempts from this IP, please try again after a minute"
 });
 
 const slides = new Slides();
@@ -67,7 +60,7 @@ const nextSlide = function() {
 nextSlide();
 
 // oauth2
-app.get("/auth", authLimiter, async function(req, res) {
+app.get("/auth", async function(req, res) {
 	const authorizationUri = oauth2.authorizeURL({
 	  redirect_uri: `${process.env.BASE_URL}/authed`,
 	  scope: 'user/basic user/names',
